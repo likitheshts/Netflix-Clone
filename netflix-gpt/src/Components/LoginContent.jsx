@@ -1,9 +1,20 @@
 import React, { useRef, useState } from "react";
 import { checkValidateData, checkValidateDataSignUp } from "../Utils/Validate";
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  updateProfile,
+} from "firebase/auth";
+import { auth } from "../Utils/Firebase";
+import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { addUser } from "../Utils/UserSlice";
 
 const LoginContent = () => {
   const [isSignIn, setIsSignIn] = useState(true);
   const [errorMsg, setErrorMsg] = useState(null);
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
   const email = useRef(null);
   const password = useRef(null);
   const name = useRef(null);
@@ -21,6 +32,64 @@ const LoginContent = () => {
           name.current.value
         );
     setErrorMsg(message);
+
+    if (message !== null) return;
+
+    //SignIn / SignUp Logic
+
+    if (isSignIn) {
+      //signIn
+      signInWithEmailAndPassword(
+        auth,
+        email.current.value,
+        password.current.value
+      )
+        .then((userCredential) => {
+          // Signed in
+          const user = userCredential.user;
+        })
+        .catch((error) => {
+          setErrorMsg(error.message);
+        });
+    } else {
+      //signUp
+      createUserWithEmailAndPassword(
+        auth,
+        email.current.value,
+        password.current.value
+      )
+        .then((userCredential) => {
+          // Signed up
+          const user = userCredential.user;
+
+          updateProfile(user, {
+            displayName: name.current.value,
+            photoURL: "https://avatars.githubusercontent.com/u/74354653?v=4",
+          })
+            .then(() => {
+              const { uid, email, displayName, photoURL } = user;
+              dispatch(
+                addUser({
+                  uid: uid,
+                  email: email,
+                  displayName: displayName,
+                  photoURL: photoURL,
+                })
+              );
+            })
+            .catch((error) => {
+              navigate("/error");
+            });
+
+          // ...
+        })
+        .catch((error) => {
+          const errorCode = error.code;
+          const errorMessage = error.message;
+          setErrorMsg(errorCode + ":" + errorMessage);
+          // ..
+        });
+    }
   };
 
   return (
@@ -71,9 +140,7 @@ const LoginContent = () => {
             {isSignIn ? "Sign In" : "Sign Up"}
           </button>
           <p className="text-white">
-            {isSignIn
-              ? " New to Netflix? "
-              : " Already Registered? Sign In Now "}
+            {isSignIn ? " New to Netflix? " : " Already Registered? "}
             <span
               className="underline cursor-pointer"
               onClick={(e) => {
