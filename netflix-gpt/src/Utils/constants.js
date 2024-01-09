@@ -12,3 +12,27 @@ export const API_OPTIONS = {
       "Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIzYzJiZGEwYTRiOGFhMjgxMWQ4OTM5NDJhYTIxMDY3NyIsInN1YiI6IjY1OTUzYzRiYTY5OGNmNmJmMTQzOWZmYiIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.oKoCNKSTmxlJypYOCA4P2C1OnWUOiTCWTvLiTpK0Pnw",
   },
 };
+
+export const IMG_CDN_URL = "https://image.tmdb.org/t/p/w300";
+
+export const SUPPORTED_LANGUAGES = [
+  {
+    identifier: "en",
+    name: "English",
+  },
+  {
+    identifier: "hindi",
+    name: "Hindi",
+  },
+  {
+    identifier: "spanish",
+    name: "Spanish",
+  },
+  {
+    identifier: "kannada",
+    name: "Kannada",
+  },
+];
+
+export const OPEN_AI_GPT_KEY =
+  "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";

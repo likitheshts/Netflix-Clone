@@ -7,23 +7,28 @@ const useTrailerVideo = (movieId) => {
   const dispatch = useDispatch();
 
   const getMovieVideos = async () => {
-    const data = await fetch(
-      "https://api.themoviedb.org/3/movie/" +
-        movieId +
-        "/videos?language=en-US",
-      API_OPTIONS
-    );
-    const json = await data.json();
-    const filteredTrailers = json.results.filter(
-      (trailer) => trailer.type.toLowerCase() === "trailer"
-    );
-    const filteredTeaser =
-      filteredTrailers.length === 0
-        ? json.results[0]
-        : filteredTrailers.filter((TeaserData) =>
-            TeaserData.name.toLowerCase().includes("teaser")
-          );
-    filteredTrailers.length !== 0 && dispatch(addTrailer(filteredTeaser[0]));
+    if (movieId) {
+      const data = await fetch(
+        "https://api.themoviedb.org/3/movie/" +
+          movieId +
+          "/videos?language=en-US",
+        API_OPTIONS
+      );
+      const json = await data.json();
+
+      const filteredTrailers = json.results.filter(
+        (trailer) => trailer.type.toLowerCase() === "trailer"
+      );
+      const filteredTeaser =
+        filteredTrailers.length === 0
+          ? json.results[0]
+          : filteredTrailers.filter(
+              (TeaserData) =>
+                TeaserData.name.toLowerCase().includes("teaser") ||
+                TeaserData.name.toLowerCase().includes("trailer")
+            );
+      filteredTrailers.length !== 0 && dispatch(addTrailer(filteredTeaser[0]));
+    }
   };
   useEffect(() => {
     getMovieVideos(movieId);
